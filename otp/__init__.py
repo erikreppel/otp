@@ -1,1 +1,1 @@
-from onetimepad import *
+from otp import *
