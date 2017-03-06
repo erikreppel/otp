@@ -29,11 +29,11 @@ setup(
     url='https://github.com/erikreppel/onetimepad',
 
     # Author details
-    author='Coinbase',
-    author_email='erikreppel@coinbase.com',
+    author='Erik Reppel',
+    author_email='erikreppel@gmail.com',
 
     # Choose your license
-    license='Copyright Coinbase',
+    license='MIT',
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
