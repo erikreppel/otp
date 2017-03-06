@@ -23,6 +23,7 @@ setup(
 
     # The project's main homepage.
     url='https://github.com/erikreppel/otp',
+    download_url='https://github.com/erikreppel/otpad/archive/0.1.1.tar.gz',
 
     # Author details
     author='Erik Reppel',
