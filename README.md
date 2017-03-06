@@ -1,5 +1,11 @@
 # OTPad: One-time Pad
 
+## Install
+
+```
+$ pip install otpad
+```
+
 ## Usage
 
 ```
