@@ -1,8 +1,8 @@
-# OTP: One-time Pad
+# OTPad: One-time Pad
 
 ## Usage
 
 ```
-from otp import onetimepad
+from otpad import onetimepad
 encrypted = onetimepad('abcd', 'efgh')
 ```
