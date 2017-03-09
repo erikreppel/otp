@@ -19,14 +19,14 @@ def pad(key, key_to_encrypt, hmac_key=None):
 
     for i, _ in enumerate(key1_bytes):
         padded[i] = xor(key1_bytes[i], key2_bytes[i])
-    padded = str(padded.decode('utf-8'))
+    b64_padded = base64.b64encode(padded)
 
     if not hmac_key:
-        return {'encrypted': padded}
+        return {'encrypted': b64_padded}
 
-    digest = hmac.new(hmac_key, msg=padded, digestmod=hashlib.sha256).digest()
+    digest = hmac.new(hmac_key, msg=b64_padded, digestmod=hashlib.sha256).digest()
     digest = base64.b64encode(digest)
-    return {'encrypted': padded, 'digest': digest}
+    return {'encrypted': b64_padded, 'digest': digest}
 
 
 def unpad(key, encrypted_key, hmac_key=None, hmac_digest=None):
@@ -37,7 +37,8 @@ def unpad(key, encrypted_key, hmac_key=None, hmac_digest=None):
             - hmac_key: if a key is present, will verify and throw exception if not valid
     :returns - dictionary with key 'decrypted' which is the resultant from the XOR as a string.
     '''
-    assert len(key) == len(encrypted_key)
+    raw_encrypted_key = base64.b64decode(encrypted_key)
+    assert len(key) == len(raw_encrypted_key)
 
     if hmac_key:
         if not hmac_digest:
@@ -47,13 +48,13 @@ def unpad(key, encrypted_key, hmac_key=None, hmac_digest=None):
         if _safe_string_compare(digest, hmac_digest) is False:
             raise Exception('computed hmac of encrypted_key does not match the hmac_digest')
 
-    key1_bytes, key2_bytes = bytearray(key), bytearray(encrypted_key)
+    key1_bytes, key2_bytes = bytearray(key), bytearray(raw_encrypted_key)
     padded = bytearray([1] * len(key1_bytes))
 
     for i, _ in enumerate(key1_bytes):
         padded[i] = xor(key1_bytes[i], key2_bytes[i])
-    padded = str(padded.decode('utf-8'))
-    return {'decrypted': padded}
+    b64_padded = base64.b64encode(padded)
+    return {'decrypted': b64_padded}
 
 
 def _safe_string_compare(string1, string2):

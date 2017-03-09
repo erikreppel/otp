@@ -1,6 +1,7 @@
 import unittest
 import otpad
 from cryptography.fernet import Fernet
+import base64
 
 
 class TestOnetimepad(unittest.TestCase):
@@ -14,8 +15,8 @@ class TestOnetimepad(unittest.TestCase):
         k1 = Fernet.generate_key()
         k2 = Fernet.generate_key()
         encrypted = otpad.pad(k1, k2)
-        self.assertEqual(k2,
-                         otpad.unpad(k1, encrypted['encrypted'])['decrypted'])
+        orig = otpad.unpad(k1, encrypted['encrypted'])
+        self.assertEqual(k2, base64.b64decode(orig['decrypted']))
 
     def test_hmac_encryption_and_retrieval(self):
         k1 = Fernet.generate_key()
@@ -27,4 +28,4 @@ class TestOnetimepad(unittest.TestCase):
                            padded['encrypted'],
                            hmac_key=k3,
                            hmac_digest=padded['digest'])
-        self.assertEqual(orig['decrypted'], k2)
+        self.assertEqual(base64.b64decode(orig['decrypted']), k2)
