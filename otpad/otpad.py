@@ -58,11 +58,9 @@ def unpad(key, encrypted_text, hmac_key=None, hmac_digest=None):
 
 
 def _safe_string_compare(string1, string2):
-    same = True
-    max_length = max(len(string1), len(string2))
-    for i in range(max_length):
-        if len(string1) <= i or len(string2) <= i:
-            continue
-        if string1[i] != string2[i]:
-            same = False
-    return same
+    if len(string1) != len(string2):
+        return False
+    result = 0
+    for x, y in zip(string1, string2):
+        result |= ord(x) ^ ord(y)
+    return result == 0
