@@ -16,7 +16,7 @@ class TestOnetimepad(unittest.TestCase):
         k2 = Fernet.generate_key()
         encrypted = otpad.pad(k1, k2)
         orig = otpad.unpad(k1, encrypted['encrypted'])
-        self.assertEqual(k2, base64.b64decode(orig['decrypted']))
+        self.assertEqual(k2, orig['decrypted'])
 
     def test_hmac_encryption_and_retrieval(self):
         k1 = Fernet.generate_key()
@@ -28,4 +28,4 @@ class TestOnetimepad(unittest.TestCase):
                            padded['encrypted'],
                            hmac_key=k3,
                            hmac_digest=padded['digest'])
-        self.assertEqual(base64.b64decode(orig['decrypted']), k2)
+        self.assertEqual(orig['decrypted'], k2)

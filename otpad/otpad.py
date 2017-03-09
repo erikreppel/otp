@@ -53,8 +53,8 @@ def unpad(key, encrypted_key, hmac_key=None, hmac_digest=None):
 
     for i, _ in enumerate(key1_bytes):
         padded[i] = xor(key1_bytes[i], key2_bytes[i])
-    b64_padded = base64.b64encode(padded)
-    return {'decrypted': b64_padded}
+    padded = str(padded.decode('utf-8'))
+    return {'decrypted': padded}
 
 
 def _safe_string_compare(string1, string2):
