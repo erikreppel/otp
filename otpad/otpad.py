@@ -4,21 +4,21 @@ import hashlib
 import base64
 
 
-def pad(key, key_to_encrypt, hmac_key=None):
+def pad(key, plaintext, hmac_key=None):
     '''
     Performs a one time pad on two strings.
-    :params - key: key and key_to_encrypt are strings of equal length
-            - key_to_encrypt: key and key_to_encrypt are strings of equal len
+    :params - plaintext: plaintext and key are strings of equal length
+            - key: plaintext and key are strings of equal length
             - hmac_key: if a key is present, will add key 'digest' to return dictionary
     :returns - dictionary with key 'encrypted' which is the resultant from the XOR as a string.
                If :param hmac_key is present, will also have key 'digest' in return dictionary
     '''
-    assert len(key) == len(key_to_encrypt)
-    key1_bytes, key2_bytes = bytearray(key), bytearray(key_to_encrypt)
-    padded = bytearray([1] * len(key1_bytes))
+    assert len(plaintext) == len(key)
+    plaintext_bytes, key_bytes = bytearray(plaintext), bytearray(key)
+    padded = bytearray([1] * len(key_bytes))
 
-    for i, _ in enumerate(key1_bytes):
-        padded[i] = xor(key1_bytes[i], key2_bytes[i])
+    for i, _ in enumerate(key_bytes):
+        padded[i] = xor(plaintext_bytes[i], key_bytes[i])
     b64_padded = base64.b64encode(padded)
 
     if not hmac_key:
@@ -29,7 +29,7 @@ def pad(key, key_to_encrypt, hmac_key=None):
     return {'encrypted': b64_padded, 'digest': digest}
 
 
-def unpad(key, encrypted_key, hmac_key=None, hmac_digest=None):
+def unpad(key, encrypted_text, hmac_key=None, hmac_digest=None):
     '''
     Performs a one time pad on two strings and optionally verifies the hmac.
     :params - key: key and encrypted_key are strings of equal length
@@ -37,22 +37,22 @@ def unpad(key, encrypted_key, hmac_key=None, hmac_digest=None):
             - hmac_key: if a key is present, will verify and throw exception if not valid
     :returns - dictionary with key 'decrypted' which is the resultant from the XOR as a string.
     '''
-    raw_encrypted_key = base64.b64decode(encrypted_key)
-    assert len(key) == len(raw_encrypted_key)
+    raw_encrypted_text = base64.b64decode(encrypted_text)
+    assert len(key) == len(raw_encrypted_text)
 
     if hmac_key:
         if not hmac_digest:
             raise Exception('hmac_key with no hmac_digest')
-        digest = hmac.new(hmac_key, msg=encrypted_key, digestmod=hashlib.sha256).digest()
+        digest = hmac.new(hmac_key, msg=encrypted_text, digestmod=hashlib.sha256).digest()
         digest = base64.b64encode(digest)
         if _safe_string_compare(digest, hmac_digest) is False:
-            raise Exception('computed hmac of encrypted_key does not match the hmac_digest')
+            raise Exception('computed hmac of encrypted_text does not match the hmac_digest')
 
-    key1_bytes, key2_bytes = bytearray(key), bytearray(raw_encrypted_key)
-    padded = bytearray([1] * len(key1_bytes))
+    key_bytes, encrypted_bytes = bytearray(key), bytearray(raw_encrypted_text)
+    padded = bytearray([1] * len(key_bytes))
 
-    for i, _ in enumerate(key1_bytes):
-        padded[i] = xor(key1_bytes[i], key2_bytes[i])
+    for i, _ in enumerate(key_bytes):
+        padded[i] = xor(key_bytes[i], encrypted_bytes[i])
     padded = str(padded.decode('utf-8'))
     return {'decrypted': padded}
 
