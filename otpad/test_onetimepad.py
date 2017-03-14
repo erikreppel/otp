@@ -31,7 +31,7 @@ class TestOnetimepad(unittest.TestCase):
         self.assertEqual(orig['decrypted'], k2)
 
     def test_invalid_hmac_key_raises_exception(self):
-        with self.assertRaises(Exception):
+        with self.assertRaises(otpad.HMACDigestMissMatchException):
             k1 = Fernet.generate_key()
             k2 = Fernet.generate_key()
             k3 = Fernet.generate_key()
@@ -43,7 +43,7 @@ class TestOnetimepad(unittest.TestCase):
 
 
     def test_invalid_hmac_digest_raises_exception(self):
-        with self.assertRaises(Exception):
+        with self.assertRaises(otpad.HMACDigestMissMatchException):
             k1 = Fernet.generate_key()
             k2 = Fernet.generate_key()
             k3 = Fernet.generate_key()

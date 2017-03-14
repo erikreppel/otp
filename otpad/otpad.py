@@ -42,11 +42,16 @@ def unpad(key, encrypted_text, hmac_key=None, hmac_digest=None):
 
     if hmac_key:
         if not hmac_digest:
-            raise Exception('hmac_key with no hmac_digest')
-        digest = hmac.new(hmac_key, msg=encrypted_text, digestmod=hashlib.sha256).digest()
+            raise ValueError('hmac_key with no hmac_digest')
+        digest = hmac.new(hmac_key,
+                          msg=encrypted_text,
+                          digestmod=hashlib.sha256).digest()
         digest = base64.b64encode(digest)
+
         if _safe_string_compare(digest, hmac_digest) is False:
-            raise Exception('computed hmac of encrypted_text does not match the hmac_digest')
+            raise HMACDigestMissMatchException(
+                "computed hmac of encrypted_text doesn't match the hmac_digest"
+                )
 
     key_bytes, encrypted_bytes = bytearray(key), bytearray(raw_encrypted_text)
     padded = bytearray([1] * len(key_bytes))
@@ -64,3 +69,7 @@ def _safe_string_compare(string1, string2):
     for x, y in zip(string1, string2):
         result |= ord(x) ^ ord(y)
     return result == 0
+
+
+class HMACDigestMissMatchException(Exception):
+    pass
